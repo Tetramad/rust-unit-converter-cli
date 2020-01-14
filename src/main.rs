@@ -5,7 +5,6 @@ mod length;
 mod volume;
 
 const USAGE_MESSAGE: &str = "
-$ conv -h
 [사용법]
 conv [입력 단위] [출력 단위] [값]
 conv [값] [입력 단위] [출력 단위]
@@ -21,7 +20,7 @@ conv 100 m yd
 	리 里
 	해리 海里
 넓이
-	제곱미터 m^2 m2
+	제곱미터 m^2 m2 m²
 	헥타르 ha
 	에이커 ac
 	평
