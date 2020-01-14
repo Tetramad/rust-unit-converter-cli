@@ -1,28 +1,20 @@
-mod area;
 mod argparser;
-mod length;
-mod volume;
-
-use argparser::parse_arguments;
-use argparser::ParseResult;
+mod unit;
 
 fn main() {
-    let (from, to, value) = match parse_arguments() {
-        ParseResult::Fail(message) => {
-            eprintln!("{}", message);
-            return;
-        }
-        ParseResult::Usage(message) | ParseResult::Version(message) => {
-            println!("{}", message);
-            return;
-        }
-        ParseResult::Convert(first_owen, second_owen, third_owen) => {
-            (first_owen, second_owen, third_owen)
-        }
-    };
+    let args = argparser::arguments();
+    let (from, to, value) = unit::identify(&args);
 
-    let value: f64 = value.parse().unwrap();
+    if !unit::is_convertable(&from, &to) {
+        panic!();
+    }
 
+    let value = unit::convert(&from, &to, value);
+
+    println!("{}", value);
+}
+
+    /*
     if from.as_str() == "m" || from.as_str() == "yd" || from.as_str() == "리" {
         let value = match from.as_str() {
             "m" => length::Length::Meter(value),
@@ -104,4 +96,4 @@ fn main() {
 
         println!("{}", v);
     }
-}
+    */

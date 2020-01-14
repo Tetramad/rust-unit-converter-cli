@@ -1,13 +1,13 @@
 use std::env;
 
-pub enum ParseResult {
+enum ParseResult {
     Usage(String),
     Version(String),
-    Convert(String, String, String),
+    Convert((String, String, String)),
     Fail(String),
 }
 
-pub fn parse_arguments() -> ParseResult {
+fn parse() -> ParseResult {
     let args: Vec<String> = env::args().collect();
 
     match args.len() {
@@ -28,12 +28,28 @@ pub fn parse_arguments() -> ParseResult {
                 },
             };
         },
-        3 => {
-            unimplemented!();
+        4 => {
+            return ParseResult::Convert((args[1].clone(), args[2].clone(), args[3].clone()));
         },
         _ => {
             let message = HELP_MESSAGE.replace(PROGRAM_NAME, args[0].as_str());
             return ParseResult::Fail(message);
+        }
+    }
+}
+
+pub fn arguments() -> (String, String, String) {
+    match parse() {
+        ParseResult::Fail(message) => {
+            eprintln!("{}", message);
+            std::process::exit(1);
+        }
+        ParseResult::Usage(message) | ParseResult::Version(message) => {
+            println!("{}", message);
+            std::process::exit(0);
+        }
+        ParseResult::Convert(strings) => {
+            strings
         }
     }
 }
