@@ -1,57 +1,27 @@
-use std::env;
-
 mod area;
+mod argparser;
 mod length;
 mod volume;
 
-const USAGE_MESSAGE: &str = "
-[사용법]
-conv [입력 단위] [출력 단위] [값]
-conv [값] [입력 단위] [출력 단위]
-
-=예시=
-conv m yd 100
-conv 100 m yd
-
-[단위]
-길이
-	미터 mm
-	야드 yd
-	리 里
-	해리 海里
-넓이
-	제곱미터 m^2 m2 m²
-	헥타르 ha
-	에이커 ac
-	평
-부피
-	리터 L
-	갤런 gal
-	온스 oz
-	되
-
-[버전]
-conv [-v|--version]
-";
+use argparser::parse_arguments;
+use argparser::ParseResult;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let (from, to, value) = match parse_arguments() {
+        ParseResult::Fail(message) => {
+            eprintln!("{}", message);
+            return;
+        }
+        ParseResult::Usage(message) | ParseResult::Version(message) => {
+            println!("{}", message);
+            return;
+        }
+        ParseResult::Convert(first_owen, second_owen, third_owen) => {
+            (first_owen, second_owen, third_owen)
+        }
+    };
 
-    if args.len() == 2 {
-        let maybe_option = args.get(1).unwrap();
-        match maybe_option.as_str() {
-            "-v" | "--version" => println!("Unit Converter version {}", env!("CARGO_PKG_VERSION")),
-            _ => println!("{}", USAGE_MESSAGE),
-        };
-        return;
-    } else if args.len() != 3 {
-        println!("{}", USAGE_MESSAGE);
-        return;
-    }
-
-    let from = args.get(1).unwrap();
-    let to = args.get(2).unwrap();
-    let value: f64 = args.get(3).unwrap().parse().unwrap();
+    let value: f64 = value.parse().unwrap();
 
     if from.as_str() == "m" || from.as_str() == "yd" || from.as_str() == "리" {
         let value = match from.as_str() {
