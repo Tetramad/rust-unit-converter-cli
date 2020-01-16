@@ -1,5 +1,6 @@
 mod argparser;
 mod unit_literals;
+mod message;
 
 use argparser::arguments;
 use std::convert::TryFrom;
@@ -43,6 +44,9 @@ fn identify(args: &(String, String, String)) -> (UnitLiteral, UnitLiteral, f64) 
             UnitLiteral::try_from(&args.1).unwrap_or_else(on_failure),
             value,
         ),
-        _ => unimplemented!(),
+        _ => {
+            eprintln!("{}", message::help_message());
+            std::process::exit(1);
+        }
     }
 }
